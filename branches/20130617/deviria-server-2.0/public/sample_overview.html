@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Deviria Adventures</title>
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<!-- HTML5 shim, for IE6-8 support of HTML elements -->
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+
+		<link href="/stylesheets/deviria.css" rel="stylesheet">
+		<!-- styles -->
+	</head>
+	<body>
+		<div id="fb-root"></div>
+		<script>
+			(function(d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) return;
+			js = d.createElement(s); js.id = id;
+			js.src = "//connect.facebook.net/pt_BR/all.js#xfbml=1&appId=480845948672620";
+			fjs.parentNode.insertBefore(js, fjs);
+			}(document, 'script', 'facebook-jssdk'));
+		</script>
+		<div align="center" style="width: 100%;">
+			<img src="/images/banner.png"/>
+		</div>
+		<h2>Olá, Thiago Uriel Garcia! Seja bem-vindo.</h2>
+		<div class="fb-like" data-href="https://apps.facebook.com/deviria-tests/" data-send="true" data-width="450" data-show-faces="true"></div>
+		<table border="0" cellpadding="0" cellspacing="5" width="100%">
+			<tr>
+				<td><div class="fbgreybox">Minhas Histórias</div></td>
+				<td><div class="fbgreybox">Melhores Histórias</div></td>
+			</tr>
+			<tr>
+				<td width="50%"  valign="top">
+					<table border="0" cellpadding="1" cellspacing="1" width="100%">
+						<tr class="fbcontentdivider">
+							<th>Título</th>
+							<th>Pontuação</th>
+						</tr>
+						<tbody id="mine">
+						</tbody>
+					</table>
+				</td>
+				<td width="50%" valign="top">
+					<table border="0" cellpadding="1" cellspacing="1" width="100%">
+						<tr class="fbcontentdivider">
+							<th>Título</th>
+							<th>Pontuação</th>
+							<th>Criador</th>
+						</tr>
+						<tbody id="topRanked">
+						</tbody>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center" valign="bottom">
+					<hr/>
+					<a href="#" class="mainButton">Nova História</a>
+				</td>
+			</tr>
+		</table>
+		<script type="text/javascript" language="javascript" src="js/lib/jquery-1.9.1.js"></script>
+		<script type="text/javascript" language="javascript">
+		function json(){
+			json.prototype.loadMyAdventures = function() {
+				$('#mine').html('Carregando dados...');
+				$.getJSON('http://localhost:3000/api/adventures/100001623927718', function(data) {
+					if (data.length > 0) {
+						var results;
+						for (i=0; i<data.length; i++) {
+							var cssClass = (i%2==0) ? 'oddline' : 'evenline';
+							results += '<tr class="' + cssClass + '">';
+							results += '<td>' + data[i].title + '</td>';
+							results += '<td>' + data[i].pointsEarned + '</td>';
+						}
+						console.log(results);
+						$('#mine').html(results);
+					} else {
+						$('#mine').html('Nenhuma aventura cadastrada');
+					}
+				});
+			}		
+			json.prototype.loadTopAdventures = function() {
+				$('#topRanked').html('Carregando dados...');
+				$.getJSON('http://localhost:3000/api/adventures/top', function(data) {
+					if (data.length > 0) {
+						var results;
+						for (i=0; i<data.length; i++) {
+							var cssClass = (i%2==0) ? 'oddline' : 'evenline';
+							results += '<tr class="' + cssClass + '">';
+							results += '<td>' + data[i].title + '</td>';
+							results += '<td>' + data[i].pointsEarned + '</td>';
+							for (j=0; j<data[i].players.length; j++) {
+								if (data[i].players[j].founder === true) {
+									results += '<td>' + data[i].players[j].facebookInfo.displayName + '</td>';
+								}
+							}
+							
+						}
+						console.log(results);
+						$('#topRanked').html(results);
+					} else {
+						$('#topRanked').html('Nenhuma aventura cadastrada');
+					}
+				});
+			};
+		}
+		var json = new json();
+		json.loadMyAdventures();
+		json.loadTopAdventures();
+		</script>
+	</body>
+</html>

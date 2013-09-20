@@ -1,0 +1,112 @@
+extends layout
+
+block content
+	h1	Cadastro da hist&oacute;ria...
+	script
+		$(document).ready(function(){
+
+			$('.imagemHeroiEsquerda').each(function(){
+				$(this).qtip({
+					content: {
+						text: '<div style="display:inline-block; text-align:center;"><img style="width:50%;" src="/admin/images/heroes/'+$(this).attr('title')+'Maior.PNG"/></div><div style="display:inline-block;"><span style="font-size: 15px!important;">'+ $(this).attr('alt')+'</span></div>',
+						title: $(this).attr('title')
+					},
+					show: {
+						event: 'mouseover',
+						solo: true
+					},
+					position: {
+						my: 'center left',
+						target: $(this),
+						viewport: $(window), // Keep it on-screen at all times if possible
+						adjust: {
+							x: 55,  y: 10
+						}
+					},					
+					hide: {
+						event: 'mouseout',
+					}
+				});	
+			});
+
+			$('.imagemHeroiDireita').each(function(){
+				$(this).qtip({
+					content: {
+						text: '<div style="display:inline-block; text-align:center;"><img style="width:50%;" src="/admin/images/heroes/'+$(this).attr('title')+'Maior.PNG"/></div><div style="display:inline-block;"><span style="font-size: 15px!important;">'+ $(this).attr('alt')+'</span></div>',
+						title: $(this).attr('title')
+					},
+					show: {
+						event: 'mouseover',
+						solo: true
+					},
+					position: {
+						my: 'center right',
+						target: $(this),
+						viewport: $(window), // Keep it on-screen at all times if possible
+						adjust: {
+							x: -55,  y: 10
+						}
+					},					
+					hide: {
+						event: 'mouseout',
+					}
+				});
+			});
+
+			$('#cadAdventure').click(function(){
+				var players = new Array();;
+				var adventure = new Object();
+				$('.textBox').each(function(){
+					var player = new Object();
+					if($(this).val() != null && $(this).val() != ''){
+						player.facebookID = $(this).val();
+						player.assignedHeroID = $(this).attr('id');
+						player.currentlyActive = true;
+						players.push(player);
+					}
+				});
+
+				if(players != null && players.length > 0){
+					adventure.authorFacebookID = 'Teste 1' //TODO alterar para a forma correta de buscar o facebook id
+					adventure.players = players
+					adventure.points = 0
+					adventure.size = 'S'
+					$.ajax({
+						url : 'http://#{host}:3000/api/adventures',
+						data: {'params' : adventure},
+						type: 'POST',
+						success : function(data){
+							$('#textMessage').text('Cadastro realizado com sucesso!');
+							$('#messageBox').css('display','block');
+						},
+						error: function(){
+						}
+					});					
+				}else{
+					$('#textMessage').text('E necessario escolher ao menos um aventureiro!');
+					$('#messageBox').css('display','block');
+				}
+				
+			});
+			
+		});
+	div(id="messageBox", style="display:none;")
+		ul
+			li
+				span(id="textMessage")
+	div(id="herois")
+		if (typeof heroes!='undefined')
+			div
+				span Nome da Aventura 
+				input(type="text", class="textBox",  id="nomeAventura")
+			each hero, i in heroes
+				div(class="heroi")
+					div(class="imagem")
+						if (hero.grammaticalGender=='M')
+							img(class="imagemHeroiEsquerda", src="/admin/#{hero.imageURL}", title="#{hero.name}", alt="#{hero.description}")
+						else
+							img(class="imagemHeroiDireita", src="/admin/#{hero.imageURL}", title="#{hero.name}", alt="#{hero.description}")							
+					div(class="nome")
+						input(type="text", class="textBox",  id="#{hero._id}")
+	div(id="buttons")
+		input(type="button", value="Iniciar a aventura!", id="cadAdventure")

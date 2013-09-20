@@ -1,0 +1,191 @@
+﻿<html>
+	<head>
+		<meta charset="utf-8"> 
+		<title>Deviria Adventures</title>
+		<style type="text/css" title="currentStyle">
+		@import "css/jquery.dataTables.css";
+		@import "css/tableTools.css";
+		@import "css/dataTables.editor.css";
+						
+		div.dataTables_wrapper, table {
+			font: 13px/1.45em "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+		}
+		</style>
+	<head>
+	<body>
+		<div  style="margin-bottom: 2%;">
+			<table id="itemsTable" class="display">
+				<thead>
+					<tr>
+						<th width="10%">Refer&ecirc;ncia</th>
+						<th width="30%">Nome</th>
+						<th width="10%">Pontos</th>
+						<th width="10%">Frases</th>
+						<th width="10%">Lugares</th>
+						<th width="10%">Items</th>
+						<th width="10%">NPCs</th>
+						<th width="5%">G&ecirc;nero</th>
+						<th width="5%">Grau</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<th>Refer&ecirc;ncia</th>
+						<th>Nome</th>
+						<th>Pontos</th>
+						<th>Frases</th>
+						<th>Lugares</th>
+						<th>Items</th>
+						<th>NPCs</th>
+						<th>G&ecirc;nero</th>
+						<th>Grau</th>
+					</tr>
+				</tfoot>				
+			</table>
+		</div>
+		</style>
+		<script type="text/javascript" language="javascript" src="js/lib/jquery-1.9.1.js"></script>
+		<script type="text/javascript" language="javascript" src="js/lib/jquery.dataTables.js"></script>
+		<script type="text/javascript" language="javascript" src="js/lib/TableTools.js"></script>
+		<script type="text/javascript" language="javascript" src="js/lib/dataTables.editor.js"></script>
+		<script type="text/javascript" language="javascript">
+		
+		/** Referência para o editor em uso pela view. */
+		var editor; 
+
+		function isArray(o) {
+			return Object.prototype.toString.call(o) === '[object Array]';
+		}
+
+		//
+		// Início das operações que só poderão ser realizadas uma vez que a view
+		// tenha sido completamente carregada pelo navegador.
+		//
+		// Estas operações consistem basicamente na inicialização da API Editor,
+		// para operações de cadastro/edição/exclusão e da API Datatables, para
+		// listagem organizada e paginada dos dados.
+		//
+		$(document).ready(function() {
+		
+			//----[ Configuração da API "Editor" ]---------------------------------------
+			editor = new $.fn.dataTable.Editor({
+				"ajaxUrl": {
+					"create": "/api/items",
+					"edit": "PUT /api/items/_id_",
+					"remove": "DELETE /api/items/_id_"
+				},
+				"domTable": "#itemsTable",
+				"fields": [{
+					"type": "hidden",
+					"label": "_id:",
+					"name": "_id"
+				}, {				
+					"label": "Referência:",
+					"name": "reference"
+				}, {
+					"label": "Nome:",
+					"name": "name"
+				}, {
+					"label": "Pontos:",
+					"name": "points"
+				}, {
+					"label": "Frases:",
+					"name": "phrasePrereqs"
+				}, {
+					"label": "Lugares:",
+					"name": "placePrereqs"
+				}, {
+					"label": "Items:",
+					"name": "itemPrereqs"
+				}, {
+					"label": "NPCs:",
+					"name": "npcPrereqs"
+				}, {
+					"type": "select",
+					"label": "Gênero:",
+					"name": "grammaticalGender",
+					"ipOpts": [
+						{ "label": "Masculino", "value": "M" },
+						{ "label": "Feminino", "value": "F" }
+					]
+				}, {
+					"type": "select",
+					"label": "Grau:",
+					"name": "grammaticalNumber",
+					"ipOpts": [
+						{ "label": "Singular", "value": "S" },
+						{ "label": "Plural", "value": "P" }
+					]
+				}]
+			});
+			
+			//----[ Configuração padrão para a API "DataTable" ] ---------------------------------
+
+			var settings = {
+				"sDom": "Tfrtip",
+				"sAjaxSource": "/api/items",
+				"aaSorting": [[ 1, "asc" ]],
+				"aoColumns": [
+					{ "mData": "reference" },
+					{ "mData": "name" },
+					{ "mData": "points" },
+					{ "mData": "phrasePrereqs" },
+					{ "mData": "placePrereqs" },
+					{ "mData": "itemPrereqs" },
+					{ "mData": "npcPrereqs" },
+					{ "mData": "grammaticalGender" },
+					{ "mData": "grammaticalNumber" }
+				],
+				"aoColumnDefs": [{ 
+					"mRender": function (data, type, row) {
+						return (isArray(data)?data.join(", "):data); 
+					},
+					"aTargets": [3,6]
+				}, {
+					"bSortable": false,
+					"aTargets": [7, 8]
+				}],
+				"oTableTools": {
+					"sRowSelect": "multi",
+					"aButtons": [
+						{ "sButtonText": "Novo Item", "sExtends": "editor_create", "editor": editor },
+						{ "sButtonText": "Editar Item", "sExtends": "editor_edit", "editor": editor },
+						{ "sButtonText": "Remover Item", "sExtends": "editor_remove", "editor": editor }
+					]
+				},
+				"fnRowCallback": function(row, data, displayIndex) {
+					row.setAttribute('id', data["_id"]);
+				}
+			};
+		 
+			// 
+			// Estabelecer que ao pressionar a tecla ENTER os dados do formulário
+			// deverão ser submetidos, que que ao pressionar a tecla ESC, a janela
+			// de formulário deverá ser fechada.
+			//
+			editor.on("onOpen", function () {
+				$(document).bind("keyup", function (e) {
+					if (e.keyCode === 13) editor.submit(); 
+					else if (e.keyCode === 27) editor.close();
+				});
+			});
+		 
+			// 
+			// E também devemos remover o listener quando o formulário do editor 
+			// for fechado por qualquer motivo!
+			//
+			editor.on("onClose", function () {
+				$(document).unbind("keyup");
+				$("#itemsTable").dataTable().fnDestroy();
+				$("#itemsTable").attr('style','');
+				$("#itemsTable").dataTable(settings);				
+			});
+		 			 	 
+			//----[ Criação do objeto "Datatable" ]------------------------------------
+			
+			$("#itemsTable").dataTable(settings);
+					
+		});		
+		</script>
+	</body>
+</html>

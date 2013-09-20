@@ -1,0 +1,40 @@
+﻿<html>
+	<head>
+		<title>Deviria Adventures - Admin</title>
+		<link rel="stylesheet" href="css/jquery-ui-1.10.3.custom.css" />
+		<script type="text/javascript" language="javascript" src="js/lib/jquery.js"></script>
+		<script type="text/javascript" language="javascript" src="js/lib/jquery-ui-1.10.3.custom.js"></script>
+	<script>
+	$(function() {
+		$( "#tabs" ).tabs({
+			beforeLoad: function( event, ui ) {
+				ui.jqXHR.error(function() {
+					ui.panel.html(
+						"Houve um problema na renderiza&ccedil;&atilde;o da aba, favor contactar o administrador."
+                    );
+				});
+			}
+		});
+	});
+	</script>
+	<style>
+	body{
+		font: 62.5% "Trebuchet MS", sans-serif;
+		margin: 50px;
+	}
+	</style>
+	<head>
+	<body>
+		<div id="header"></div>
+		<div id="tabs">
+			<ul>
+				<li><a href="admin_heroes.html">Her&oacute;is</a></li>
+				<li><a href="admin_phrases.html">Frases</a></li>
+				<li><a href="admin_places.html">Lugares</a></li>
+				<li><a href="admin_items.html">Itens</a></li>
+				<li><a href="admin_npcs.html">NPC's</a></li>
+				<li><a href="admin_substitutions.html">Substitui&ccedil;&otilde;es</a></li>
+			</ul>
+		</div>
+	</body>
+</html>

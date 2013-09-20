@@ -1,0 +1,72 @@
+﻿<html>
+	<head>
+		<meta charset="utf-8"> 
+		<title>Deviria Adventures</title>
+		<style type="text/css" title="currentStyle">
+		@import "css/jquery.dataTables.css";
+						
+		div.dataTables_wrapper, table {
+			font: 13px/1.45em "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+		}
+		</style>
+	<head>
+	<body>
+		<div style="margin-bottom: 2%;">
+			<table id="heroesTable" class="display">
+				<thead>
+					<tr>
+						<th>Imagem</th>
+						<th>Nome</th>
+						<th>Descrição</th>
+						<th>Sexo</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<th>Imagem</th>
+						<th>Nome</th>
+						<th>Descrição</th>
+						<th>Sexo</th>
+					</tr>
+				</tfoot>				
+			</table>
+		</div>
+		</style>
+		<script type="text/javascript" language="javascript" src="js/lib/jquery-1.9.1.js"></script>
+		<script type="text/javascript" language="javascript" src="js/lib/jquery.dataTables.js"></script>
+		<script type="text/javascript" language="javascript">		
+		//
+		// Início das operações que só poderão ser realizadas uma vez que a view
+		// tenha sido completamente carregada pelo navegador.
+		//
+		// Estas operações consistem basicamente na inicialização da API Datatables, 
+        // para listagem organizada e paginada dos dados.
+		//
+		$(document).ready(function() {
+			$("#heroesTable").dataTable({
+				"sDom": "Tfrtip",
+				"sAjaxSource": "/api/heroes",
+				"aaSorting": [[ 1, "asc" ]],
+				"aoColumns": [
+					{ "mData": "imageURL" },
+					{ "mData": "name" },
+					{ "mData": "description" },
+					{ "mData": "grammaticalGender" }
+				],
+				"aoColumnDefs": [{ 
+					"mRender": function (data, type, row) { 
+						return "<img style='width:80%' src='/images/heroes/" + data + "'/>"; 
+					},
+					"aTargets": [0]
+				}, {
+					"bSortable": false,
+					"aTargets": [0, 3]
+				}],
+				"fnRowCallback": function(row, data, displayIndex) {
+					row.setAttribute('id', data["_id"]);
+				}
+			});
+		});		
+		</script>
+	</body>
+</html>

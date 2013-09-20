@@ -1,0 +1,146 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us">
+<head>
+    <title>Seleção de Classe</title>
+    <link rel="stylesheet" type="text/css" href="/css/deviria-facebook.css" />
+    <style type="text/css">
+    .jcarousel-container-vertical {
+        width: 500px;
+        height: 220px;
+        background: #ffffff;
+        border: 1px solid #fff;
+    }
+
+    .jcarousel-clip-vertical {
+        top: 15px;
+        width: 490px;
+        height: 190px;
+        margin: 0 5px;
+        z-index: 20;
+        overflow: hidden;
+    }
+
+    #mycarousel li,
+    .jcarousel-item-vertical,
+    .jcarousel-item-placeholder-vertical {
+        width: 470px;
+        height: auto;
+        margin: 5px 0;
+    }
+
+    .jcarousel-item h3,
+    .jcarousel-item p,
+    .jcarousel-item pre {
+        margin: 0;
+        font-size: 90%;
+    }
+
+    .jcarousel-item pre {
+        margin: 5px 0;
+        padding: 5px;
+    }
+
+    .jcarousel-next-vertical {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 500px;
+        height: 14px;
+        cursor: pointer;
+        border-top: 1px solid #fff;
+        background: #627AAD url(/images/arrow-down.gif) no-repeat center;
+    }
+
+    .jcarousel-next-disabled-vertical {
+        cursor: default;
+        opacity: .5;
+        -moz-opacity: .5;
+        filter: alpha(opacity=50);
+    }
+
+    .jcarousel-prev-vertical {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 500px;
+        height: 14px;
+        cursor: pointer;
+        border-bottom: 1px solid #fff;
+        background: #627AAD url(/images/arrow-up.gif) no-repeat center;
+    }
+
+    .jcarousel-prev-disabled-vertical {
+        cursor: default;
+        opacity: .5;
+        -moz-opacity: .5;
+        filter: alpha(opacity=50);
+    }
+
+    .loading {
+        background: transparent url(/images/loading-small.gif) 50% 50% no-repeat;
+    }
+    
+    </style>
+    </head>
+    <body>
+    
+        <div id="heroList">
+            <ul>
+            </ul>
+        </div>
+		<input type='hidden' id='facebookID'/>
+		<input type='text' id='facebookName' style='width:420px'/>
+        <script type="text/javascript" src="/js/lib/jquery-1.9.1.js"></script>
+        <script type="text/javascript" src="/js/lib/jquery.jcarousel.js"></script>
+        <script>
+        jQuery(document).ready(function() {
+        
+            jQuery.easing['BounceEaseOut'] = function(p, t, b, c, d) {
+                if ((t/=d) < (1/2.75)) {
+                    return c*(7.5625*t*t) + b;
+                } else if (t < (2/2.75)) {
+                    return c*(7.5625*(t-=(1.5/2.75))*t + .75) + b;
+                } else if (t < (2.5/2.75)) {
+                    return c*(7.5625*(t-=(2.25/2.75))*t + .9375) + b;
+                } else {
+                    return c*(7.5625*(t-=(2.625/2.75))*t + .984375) + b;
+                }
+            };
+        
+            function mycarousel_initCallback(carousel, state) {
+                carousel.lock();
+				$.getJSON('https://deviria-tests.aws.af.cm/api/heroes', function(data) {
+					if (data.length > 0) {
+						for (i=0; i<data.length; i++) {
+							var html = '<li>'
+							         + '<div style="width: 100%; height: 180px;">'
+							         + '<table border="0" cellpadding="1" cellspacing="0">'
+							         + '<tr>'
+							         + '<td width="150" rowspan="2" align="center" valign="middle"><img src="https://deviria-tests.aws.af.cm/images/heroes/' + data[i].imageURL + '" width="100"/></td>'
+							         + '<td><h3>' + data[i].name + '</h3></td>'
+							         + '</tr>'
+							         + '<tr><td><font size="2">' + data[i].description + '</font></td></tr>'
+							         + '</table>'
+							         + '</div>'
+							         + '</li>';
+							carousel.add(i + 1, html);
+						}
+					}
+					carousel.size(data.length);
+					carousel.unlock();
+					carousel.setup();
+				});
+            };
+            
+            jQuery('#heroList').jcarousel({
+                vertical: true,
+                scroll: 1,
+                size: 0,
+                easing: 'BounceEaseOut',
+                animation: 1000,
+                itemFallbackDimension: 180,
+                initCallback: mycarousel_initCallback
+            });
+        });
+        </script>
+    </body>
+</html>

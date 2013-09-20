@@ -1,0 +1,24 @@
+{ 
+	"name"          : "DeviriaServer",
+	"description"   : "Supporting Server for Facebook App",
+	"author"        : "Devir Livraria",
+	"main"          : "./application.js",
+	"version"       : "1.0.0",
+    "private"       : true,
+	"dependencies"  : { 
+		"mongodb"   : "1.2.14",
+		"mongoose"  : "3.6.5",
+		"express"   : "3.0.0",
+        "jade"      : "0.28.1",
+        "stylus"    : "0.32.1",
+        "validator" : "1.1.1",
+        "fbgraph"   : "0.2.6",
+        "lex"       : "1.7.4",
+        "string"    : "1.3.1",
+        "nodeunit"  : "0.8.0"
+	},
+	"engines": {
+		"node" : ">=0.6.19",
+        "npm"  : ">=1.1.49"
+	}
+}

@@ -1,0 +1,155 @@
+<% include layout_top %>
+<table border="0" cellpadding="0" cellspacing="5" width="100%">
+	<tr>
+		<td width="50%"><div class="fbgreybox"><span id="title"></span></div></td>
+		
+	</tr>
+	<tr>
+		<table border="0" cellpadding="1" cellspacing="1" width="100%">
+
+		</table>
+	</tr>	
+	<tr>
+		<td valign="top">
+			<table border="0" cellpadding="1" cellspacing="1" width="100%">
+				<div id="points">
+					
+				</div>
+				<tbody id="mine">
+				</tbody>
+			</table>
+		</td>
+		
+	</tr>
+	<br>
+	</br>
+	<tr>
+		Inserir novo capítulo.	
+		<input type='text' id='taleTxt' style='width:80%'/>
+		<button id="btnAdd">Adicionar</button>
+	</tr>
+	<tr>
+		<td valign="top" align="center" rowspan="3">
+			<div id="heroList">
+				<ul>
+				</ul>
+			</div>
+			<input type='hidden' id='facebookFriendID'/>
+			<input type='text' id='facebookFriendName' style='width:80%'/>
+			<button id="btnAdd">Adicionar</button>
+		</td>
+	</tr>
+
+</table>
+<script type="text/javascript" language="javascript" src="/js/lib/jquery-1.9.1.js"></script>
+<script type="text/javascript" language="javascript" src="/js/lib/jquery-ui-1.10.3.custom.js"></script>
+<script type="text/javascript" language="javascript" src="/js/lib/jquery.jcarousel.js"></script>
+<script type="text/javascript" language="javascript">
+
+
+function json() {
+	json.prototype.loadAdventure = function() {
+		$('#mine').html('Carregando dados...');
+		$.getJSON('http://localhost:3000/api/adventures/51d49fbe27ac68dc0b00000a', function(data) {		
+			if (data.length > 0) {
+				$('#title').html(data[0].title);
+				var results;
+				for (i=0; i<data[0].tales.length; i++) {
+					var cssClass = (i%2==0) ? 'oddline' : 'evenline';
+					results += '<tr class="' + cssClass + '">';
+					results += '<td>' + data[0].tales[i].convertedPhrase + '</td>';
+					
+				}
+				$('#mine').html(results);
+				for (i=0; i<data[0].players.length; i++) {
+					if (data[0].players[i].facebookInfo.userID == <%= facebookUserID %>)
+					{
+						
+						$('#points').html('Pontuação nesta aventura: ' + data[0].players[i].pointsEarned);
+						break;
+					}
+				}
+			
+			} else {
+				$('#mine').html('Nenhum capítulo cadastrado');
+			}
+		});
+	}		
+	
+}
+jQuery(document).ready(function() {
+	var fbFriends = <%- facebookUserFriends %>;
+	jQuery.easing['BounceEaseOut'] = function(p, t, b, c, d) {
+		if ((t/=d) < (1/2.75)) {
+			return c*(7.5625*t*t) + b;
+		} else if (t < (2/2.75)) {
+			return c*(7.5625*(t-=(1.5/2.75))*t + .75) + b;
+		} else if (t < (2.5/2.75)) {
+			return c*(7.5625*(t-=(2.25/2.75))*t + .9375) + b;
+		} else {
+			return c*(7.5625*(t-=(2.625/2.75))*t + .984375) + b;
+		}
+	};
+	function mycarousel_initCallback(carousel, state) {
+		carousel.lock();
+		$.getJSON('https://deviria-tests.aws.af.cm/api/heroes', function(data) {
+			if (data.length > 0) {
+				for (i=0; i<data.length; i++) {
+					var html = '<li>'
+							 + '<div style="width: 100%; height: 130px;">'
+							 + '<table border="0" cellpadding="1" cellspacing="0">'
+							 + '<tr>'
+							 + '<td width="150" rowspan="2" align="center" valign="middle"><img src="https://deviria-tests.aws.af.cm/images/heroes/' + data[i].imageURL + '" width="100"/></td>'
+							 + '<td><font style="font-family: tahoma,verdana,arial,sans-serif; font-size: 16px; color: #333333; ">' + data[i].name + '</h3></td>'
+							 + '</tr>'
+							 + '<tr><td><font style="font-family: tahoma,verdana,arial,sans-serif; font-size: 11px; color: #333333; ">' + data[i].description + '</font></td></tr>'
+							 + '</table>'
+							 + '</div>'
+							 + '</li>';
+					carousel.add(i + 1, html);
+				}
+			}
+			carousel.size(data.length);
+			carousel.unlock();
+			carousel.setup();
+		});
+	};
+	jQuery('#heroList').jcarousel({
+		vertical: true,
+		scroll: 1,
+		size: 0,
+		easing: 'BounceEaseOut',
+		animation: 1000,
+		itemFallbackDimension: 130,
+		initCallback: mycarousel_initCallback
+	});
+	jQuery('#facebookFriendName').autocomplete({
+		minLength: 3,
+		source: fbFriends,
+		focus: function(event, ui) {
+			$('#facebookFriendName').val(ui.item.label);
+			return false;
+		},
+		select: function(event, ui) {
+			$('#facebookFriendName').val(ui.item.label);
+			$('#facebookFriendID').val(ui.item.value);
+			return false;
+		}
+	})
+	.data('ui-autocomplete')._renderItem = function(ul, item) {
+		return $("<li>")
+		.data("ui-autocomplete-item", item)
+		.append("<a><table border=0 cellpadding=0 cellspacing=1><tr><td><img src='" + item.img + "' border=0/></td><td>" + item.label + "</td></tr></table></a>")
+        .appendTo(ul);
+    };
+	jQuery('#btnAdd').button({
+		icons: {
+			primary: "ui-icon-gear",
+		}
+	});
+});		
+var json = new json();
+json.loadAdventure();
+
+</script>
+<% include layout_bottom %>

@@ -1,0 +1,148 @@
+﻿<html>
+	<head>
+		<meta charset="utf-8"> 
+		<title>Deviria Adventures</title>
+		<style type="text/css" title="currentStyle">
+		@import "css/jquery.dataTables.css";
+		@import "css/tableTools.css";
+		@import "css/dataTables.editor.css";
+						
+		div.dataTables_wrapper, table {
+			font: 13px/1.45em "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+		}
+		</style>
+	<head>
+	<body>
+		<div  style="margin-bottom: 2%;">
+			<table id="substitutionsTable" class="display">
+				<thead>
+					<tr>
+						<th width="40%">Nome</th>
+						<th width="15%">Masculino</th>
+						<th width="15%">Feminino</th>
+						<th width="15%">Plural Masculino</th>
+						<th width="15%">Plural Feminino</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<th>Nome</th>
+						<th>Masculino</th>
+						<th>Feminino</th>
+						<th>Plural Masculino</th>
+						<th>Plural Feminino</th>
+					</tr>
+				</tfoot>				
+			</table>
+		</div>
+		</style>
+		<script type="text/javascript" language="javascript" src="js/lib/jquery.js"></script>
+		<script type="text/javascript" language="javascript" src="js/lib/jquery.dataTables.js"></script>
+		<script type="text/javascript" language="javascript" src="js/lib/TableTools.js"></script>
+		<script type="text/javascript" language="javascript" src="js/lib/dataTables.editor.js"></script>
+		<script type="text/javascript" language="javascript">
+		
+		/** Referência para o editor em uso pela view. */
+		var editor; 
+
+		//
+		// Início das operações que só poderão ser realizadas uma vez que a view
+		// tenha sido completamente carregada pelo navegador.
+		//
+		// Estas operações consistem basicamente na inicialização da API Editor,
+		// para operações de cadastro/edição/exclusão e da API Datatables, para
+		// listagem organizada e paginada dos dados.
+		//
+		$(document).ready(function() {
+		
+			//----[ Configuração da API "Editor" ]---------------------------------------
+			editor = new $.fn.dataTable.Editor({
+				"ajaxUrl": {
+					"create": "/api/substitutions",
+					"edit": "PUT /api/substitutions/_id_",
+					"remove": "DELETE /api/substitutions/_id_"
+				},
+				"domTable": "#substitutionsTable",
+				"fields": [{
+					"type": "hidden",
+					"label": "_id:",
+					"name": "_id"
+				}, {				
+					"label": "Nome:",
+					"name": "name"
+				}, {
+					"label": "Masculino:",
+					"name": "maleSingularForm"
+				}, {
+					"label": "Feminino:",
+					"name": "femaleSingularForm"
+				}, {
+					"label": "Plural Masculino:",
+					"name": "malePluralForm"
+				}, {
+					"label": "Plural Feminino:",
+					"name": "femalePluralForm"
+				}]
+			});
+
+			//----[ Configuração padrão para a API "DataTable" ] ---------------------------------
+			
+			var settings = {
+				"sDom": "Tfrtip",
+				"sAjaxSource": "/api/substitutions",
+				"aaSorting": [[ 0, "asc" ]],
+				"aoColumns": [
+					{ "mData": "name" },
+					{ "mData": "maleSingularForm" },
+					{ "mData": "femaleSingularForm" },
+					{ "mData": "malePluralForm" },
+					{ "mData": "femalePluralForm" }
+				],
+				"aoColumnDefs": [{ 
+					"bSortable": false,
+					"aTargets": [1, 2, 3]
+				}],
+				"oTableTools": {
+					"sRowSelect": "multi",
+					"aButtons": [
+						{ "sButtonText": "Nova Substituição", "sExtends": "editor_create", "editor": editor },
+						{ "sButtonText": "Editar Substituição", "sExtends": "editor_edit", "editor": editor },
+						{ "sButtonText": "Remover Substituição", "sExtends": "editor_remove", "editor": editor }
+					]
+				},
+				"fnRowCallback": function(row, data, displayIndex) {
+					row.setAttribute('id', data["_id"]);
+				}
+			};
+		 
+			// 
+			// Estabelecer que ao pressionar a tecla ENTER os dados do formulário
+			// deverão ser submetidos, que que ao pressionar a tecla ESC, a janela
+			// de formulário deverá ser fechada.
+			//
+			editor.on("onOpen", function () {
+				$(document).bind("keyup", function (e) {
+					if (e.keyCode === 13) editor.submit(); 
+					else if (e.keyCode === 27) editor.close();
+				});
+			});
+		 
+			// 
+			// E também devemos remover o listener quando o formulário do editor 
+			// for fechado por qualquer motivo!
+			//
+			editor.on("onClose", function () {
+				$(document).unbind("keyup");
+				$("#substitutionsTable").dataTable().fnDestroy();
+				$("#substitutionsTable").attr('style','');
+				$("#substitutionsTable").dataTable(settings);				
+			});
+		 			 	 
+			//----[ Criação do objeto "Datatable" ]------------------------------------
+			
+			$("#substitutionsTable").dataTable(settings);
+					
+		});		
+		</script>
+	</body>
+</html>

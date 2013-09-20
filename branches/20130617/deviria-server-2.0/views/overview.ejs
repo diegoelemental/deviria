@@ -1,0 +1,136 @@
+<% include layout_top %>
+<table border="0" cellpadding="0" cellspacing="5" width="100%">
+	<tr>
+		<td width="50%"><div class="fbgreybox">Minhas Histórias</div></td>
+		<td width="50%"><div class="fbgreybox">Melhores Histórias</div></td>
+		<td width="50%"><div class="fbgreybox">Histórias Comigo</div></td>
+	</tr>
+	<tr>
+		<td valign="top">
+			<table border="0" cellpadding="1" cellspacing="1" width="100%">
+				<tr class="fbcontentdivider">
+					<th>Título</th>
+					<th>Pontuação</th>
+				</tr>
+				<tbody id="mine">
+				</tbody>
+			</table>
+		</td>
+		<td valign="top">
+			<table border="0" cellpadding="1" cellspacing="1" width="100%">
+				<tr class="fbcontentdivider">
+					<th>Título</th>
+					<th>Pontuação</th>
+					<th>Criador</th>
+				</tr>
+				<tbody id="topRanked">
+				</tbody>
+			</table>
+		</td>
+		<td valign="top">
+			<table border="0" cellpadding="1" cellspacing="1" width="100%">
+				<tr class="fbcontentdivider">
+					<th>Título</th>
+					<th>Pontuação</th>
+					<th>Criador</th>
+				</tr>
+				<tbody id="withMe">
+				</tbody>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" align="center" valign="bottom">
+			<hr/>
+			<a href="/fb/newAdventure" class="mainButton">Nova História</a>
+
+			
+		</td>
+	</tr>
+</table>
+<script type="text/javascript" language="javascript" src="/js/lib/jquery-1.9.1.js"></script>
+<script type="text/javascript" language="javascript">
+function viewAdventure(id) {
+	
+	var jqxhr = $.ajax({
+		type: "POST",
+		url: "/fb/showAdventure/",
+		data: {adventureID:id},
+		dataType: "html"
+	})
+	.done(function(data) { console.log("success"); $('body').html(data); })
+	.fail(function(data) { console.log(data); $('body').html(data); });
+}
+
+function json() {
+	json.prototype.loadMyAdventures = function() {
+		$('#mine').html('Carregando dados...');
+		//$.getJSON('https://deviria-tests.aws.af.cm/api/adventures/<%= facebookUserID %>', function(data) {
+		$.getJSON('http://localhost:3000/api/adventures/fbuser/<%= facebookUserID %>', function(data) {	
+			if (data.length > 0) {
+				var results;
+				for (i=0; i<data.length; i++) {
+					var cssClass = (i%2==0) ? 'oddline' : 'evenline';
+					results += '<tr class="' + cssClass + '">';
+					results += '<td><a href="#" onclick="viewAdventure(\'' + data[i]._id + '\')">' + data[i].title + '</a></td>';
+					results += '<td>' + data[i].pointsEarned + '</td>';
+				}
+				$('#mine').html(results);
+			} else {
+				$('#mine').html('Nenhuma aventura cadastrada');
+			}
+		});
+	}		
+	json.prototype.loadTopAdventures = function() {
+		$('#topRanked').html('Carregando dados...');
+		//$.getJSON('https://deviria-tests.aws.af.cm/api/adventures/top', function(data) {
+		$.getJSON('http://localhost:3000/api/adventures/top', function(data) {
+			if (data.length > 0) {
+				var results;
+				for (i=0; i<data.length; i++) {
+					var cssClass = (i%2==0) ? 'oddline' : 'evenline';
+					results += '<tr class="' + cssClass + '">';
+					results += '<td>' + data[i].title + '</td>';
+					results += '<td>' + data[i].pointsEarned + '</td>';
+					for (j=0; j<data[i].players.length; j++) {
+						if (data[i].players[j].author === true) {
+							results += '<td>' + data[i].players[j].facebookInfo.displayName + '</td>';
+						}
+					}
+				}
+				$('#topRanked').html(results);
+			} else {
+				$('#topRanked').html('Nenhuma aventura cadastrada');
+			}
+		});
+	};
+	json.prototype.loadAdventuresWithMe = function() {
+		$('#withMe').html('Carregando dados...');
+		//$.getJSON('https://deviria-tests.aws.af.cm/api/adventures/top', function(data) {
+		$.getJSON('http://localhost:3000/api/adventures/me', function(data) {	
+			if (data.length > 0) {
+				var results;
+				for (i=0; i<data.length; i++) {
+					var cssClass = (i%2==0) ? 'oddline' : 'evenline';
+					results += '<tr class="' + cssClass + '">';
+					results += '<td>' + data[i].title + '</td>';
+					results += '<td>' + data[i].pointsEarned + '</td>';
+					for (j=0; j<data[i].players.length; j++) {
+						if (data[i].players[j].author === true) {
+							results += '<td>' + data[i].players[j].facebookInfo.displayName + '</td>';
+						}
+					}
+				}
+				$('#withMe').html(results);
+			} else {
+				$('#withMe').html('Nenhuma aventura cadastrada');
+			}
+		});
+	};
+}
+var json = new json();
+json.loadMyAdventures();
+json.loadTopAdventures();
+json.loadAdventuresWithMe();
+</script>
+<% include layout_bottom %>

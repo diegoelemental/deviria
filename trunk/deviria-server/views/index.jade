@@ -1,0 +1,27 @@
+extends layout
+
+block content
+	h1  Bem-vindo ao Deviria Adventures!
+	div(id="buttons")
+		div(class="button")
+			input(type="button", onclick="window.location.href = 'createAdventure';", value="Criar nova hist&oacute;ria")
+	if (typeof adventures!='undefined')
+		div(id="table")
+			table
+				thead
+					tr 
+						th	Criador
+						th	Pontua&ccedil;&atilde;o
+						th	Data de in&iacute;cio
+				tbody
+					each adventure, i in adventures
+						tr
+							td	
+								span #{adventure.authorFacebookID}
+							td	
+								span #{adventure.points}
+							td	
+								span #{adventure.dateString}
+	else
+		div(id="table")
+			span Nenhuma aventura cadastrada!

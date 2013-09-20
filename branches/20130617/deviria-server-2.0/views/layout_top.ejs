@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Deviria Adventures</title>
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<!-- HTML5 shim, for IE6-8 support of HTML elements -->
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+
+		<link href="/css/deviria-facebook.css" rel="stylesheet">
+		<link href="/css/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+		<style type="text/css">
+		.jcarousel-container-vertical {
+			width: 500px;
+			height: 170px;
+			background: #ffffff;
+			border: 1px solid #fff;
+		}
+
+		.jcarousel-clip-vertical {
+			top: 15px;
+			width: 490px;
+			height: 140px;
+			margin: 0 5px;
+			z-index: 20;
+			overflow: hidden;
+		}
+
+		#heroList li,
+		.jcarousel-item-vertical,
+		.jcarousel-item-placeholder-vertical {
+			width: 470px;
+			height: auto;
+			margin: 5px 0;
+		}
+
+		.jcarousel-item h3,
+		.jcarousel-item p,
+		.jcarousel-item pre {
+			margin: 0;
+			font-size: 90%;
+		}
+
+		.jcarousel-item pre {
+			margin: 5px 0;
+			padding: 5px;
+		}
+
+		.jcarousel-next-vertical {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 500px;
+			height: 14px;
+			cursor: pointer;
+			border-top: 1px solid #fff;
+			background: #627AAD url(/images/arrow-down.gif) no-repeat center;
+		}
+
+		.jcarousel-next-disabled-vertical {
+			cursor: default;
+			opacity: .5;
+			-moz-opacity: .5;
+			filter: alpha(opacity=50);
+		}
+
+		.jcarousel-prev-vertical {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 500px;
+			height: 14px;
+			cursor: pointer;
+			border-bottom: 1px solid #fff;
+			background: #627AAD url(/images/arrow-up.gif) no-repeat center;
+		}
+
+		.jcarousel-prev-disabled-vertical {
+			cursor: default;
+			opacity: .5;
+			-moz-opacity: .5;
+			filter: alpha(opacity=50);
+		}
+
+		.loading {
+			background: transparent url(/images/loading-small.gif) 50% 50% no-repeat;
+		}		
+		</style>
+	</head>
+	<body>
+		<div id="fb-root"></div>
+		<script>
+			(function(d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) return;
+			js = d.createElement(s); js.id = id;
+			js.src = "//connect.facebook.net/pt_BR/all.js#xfbml=1&appId=480845948672620";
+			fjs.parentNode.insertBefore(js, fjs);
+			}(document, 'script', 'facebook-jssdk'));
+		</script>
+		<div align="center" style="width: 100%;">
+			<img src="/images/banner.png"/>
+		</div>
+        <h2><%= pageTitle %></h2>
+        <div class="fb-like" data-href="https://apps.facebook.com/deviria/" data-send="true" data-width="450" data-show-faces="true"></div>
